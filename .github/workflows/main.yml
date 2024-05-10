@@ -1,4 +1,4 @@
-name: Build for Multiple Platforms
+name: Build for Windows
 
 on:
   push:
@@ -8,10 +8,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: windows-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -19,13 +16,5 @@ jobs:
       - name: Set up Rust
         uses: actions/setup-rust@v1
 
-      - name: Build for ${{ matrix.os }}
-        run: cargo build --release --target ${{ matrix.os }}
-
-      - name: Archive build artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ matrix.os }}-build
-          path: target/${{ matrix.os }}/release
-
-
+      - name: Build for Windows
+        run: cargo build --release --target x86_64-pc-windows-msvc
