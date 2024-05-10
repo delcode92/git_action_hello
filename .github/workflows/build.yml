@@ -1,0 +1,24 @@
+name: Build Rust Hello World
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Build on Ubuntu runner (adjust for macOS/Windows)
+    strategy:
+      matrix:
+        target: [x86_64-unknown-linux-gnu, x86_64-apple-darwin, x86_64-pc-windows-gnu]  # Define target platforms
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          component: stable
+          toolchain: ${{ matrix.target }}
+          override: true
+
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
