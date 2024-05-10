@@ -1,24 +1,30 @@
-name: Build Rust Hello World
+name: Build for Multiple Platforms
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Build on Ubuntu runner (adjust for macOS/Windows)
+    name: Build
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [x86_64-ubuntu-linux-gnu, x86_64-apple-darwin, x86_64-pc-windows-gnu]  # Define target platforms
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Use Rust toolchain
-        uses: actions-rs/toolchain@v1
+      - name: Set up Rust
+        uses: actions/setup-rust@v1
+
+      - name: Build for ${{ matrix.os }}
+        run: cargo build --release --target ${{ matrix.os }}
+
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v2
         with:
-          component: stable
-          toolchain: ${{ matrix.target }}
-          override: true
+          name: ${{ matrix.os }}-build
+          path: target/${{ matrix.os }}/release
 
-      - name: Build
-        run: cargo build --release --target ${{ matrix.target }}
